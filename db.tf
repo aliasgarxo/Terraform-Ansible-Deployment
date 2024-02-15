@@ -19,11 +19,3 @@ resource "aws_db_subnet_group" "app_db_subnet_group" {
 output "db_endpoint" {
   value = aws_db_instance.app_db.address 
 }
-
-resource "template_file" "app_properties" { 
-  template = file("${path.module}/application.properties.template")
-  vars = {
-    db_endpoint =  
-  }
-  destination = "/opt/validation--java/src/main/resources/application.properties" # On app server
-}
