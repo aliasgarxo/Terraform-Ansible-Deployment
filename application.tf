@@ -50,7 +50,7 @@ resource "aws_launch_template" "application_tier" {
     security_groups             = [aws_security_group.arch-sg.id]
   }
 
-    user_data = "${base64encode(data.template_file.userdata.rendered)}"
+    user_data = "${path.module}/shell-script/app-server.sh"
 
   depends_on = [
     aws_nat_gateway.nat-gw-1 , aws_nat_gateway.nat-gw-2

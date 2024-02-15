@@ -12,4 +12,4 @@ export SPRING_DATASOURCE_URL="jdbc:mysql://${DB_ENDPOINT}:3306/userdata"
 export SPRING_DATASOURCE_USERNAME=${DB_USERNAME} 
 export SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
 
-java -Dserver.forward-headers-strategy=native -jar /opt/validation-0.0.1-SNAPSHOT.jar
+java -Dserver.forward-headers-strategy=native -jar /opt/app-java-jar/validation-0.0.1-SNAPSHOT.jar
