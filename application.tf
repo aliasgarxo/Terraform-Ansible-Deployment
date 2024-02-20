@@ -8,6 +8,7 @@ resource "aws_lb" "application_tier" {
   subnets            = [aws_subnet.arch-pub-sub-1.id, aws_subnet.arch-pub-sub-2.id]
 
   enable_deletion_protection = false
+  
 }
 
 resource "aws_lb_target_group" "application_tier" {
@@ -43,17 +44,18 @@ resource "aws_launch_template" "application_tier" {
 
   instance_type = var.instance-type
   image_id      = data.aws_ami.amazon_linux_2023.id
-  key_name = "terra-keypair"
+  key_name      = aws_key_pair.terra-keypair.key_name
 
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.arch-sg.id]
   }
 
-    user_data = "${path.module}/shell-script/app-server.sh"
+  user_data = "${base64encode(data.template_file.userdata.rendered)}"
+  #user_data = file("${path.module}/shell-script/app-server.sh")
 
   depends_on = [
-    aws_nat_gateway.nat-gw-1 , aws_nat_gateway.nat-gw-2
+    aws_nat_gateway.nat-gw-1, aws_nat_gateway.nat-gw-2
 
   ]
 }
@@ -75,13 +77,57 @@ resource "aws_autoscaling_group" "application_tier" {
   target_group_arns = [aws_lb_target_group.application_tier.arn]
 
 
-#   lifecycle {
-#     ignore_changes = [load_balancers, target_group_arns]
-#   }
+  #   lifecycle {
+  #     ignore_changes = [load_balancers, target_group_arns]
+  #   }
 
   tag {
     key                 = "Name"
-    value               = "application_app"
+    value               = "app"
     propagate_at_launch = true
   }
 }
+
+resource "aws_instance" "jump-ec2" {
+  ami = data.aws_ami.amazon_linux_2023.id
+  subnet_id = aws_subnet.arch-pub-sub-1.id
+  key_name = aws_key_pair.terra-keypair.key_name
+  associate_public_ip_address = true
+  security_groups = [aws_security_group.arch-sg.id]
+  instance_type = var.instance-type
+  user_data = file("${path.module}/shell-script/bastion.sh")
+  depends_on = [ local_file.private_key_pem ]
+
+  provisioner "file" {
+    source      = "terra-keypair.pem" 
+    destination = "/tmp/ssh-key-2024-02-19.key" 
+    connection {
+      type        = "ssh"
+      user        = "ec2-user" 
+      private_key = tls_private_key.pri-terra-key.private_key_pem 
+      host        = self.public_ip 
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "mv /tmp/ssh-key-2024-02-19.key /home/ec2-user/terra-keypair.pem",
+      "chmod 400 /home/ec2-user/terra-keypair.pem" 
+    ]
+    connection {
+      type        = "ssh"
+      user        = "ec2-user" 
+      private_key = tls_private_key.pri-terra-key.private_key_pem 
+      host        = self.public_ip 
+    }
+  }
+
+  tags = {
+    Name = "Bastion-Host"
+  }
+
+}
+output "instance_ip" {
+  value = aws_instance.jump-ec2.public_ip
+  description = "The public IP of the instance"
+}
+

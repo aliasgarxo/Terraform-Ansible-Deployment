@@ -1,8 +1,8 @@
 resource "aws_db_instance" "app_db" {
   allocated_storage    = 20 
   db_name              = var.db_name
-  engine               = "mysql"  # Example DB Engine 
-  engine_version       = "8.0"   # Example Version
+  engine               = "mysql" 
+  engine_version       = "8.0"
   instance_class       = var.db_instance_class
   username             = var.db_username
   password             = var.db_password 

@@ -79,7 +79,7 @@ resource "aws_autoscaling_group" "presentation_tier" {
 
   tag {
     key                 = "Name"
-    value               = "presentation_app"
+    value               = "web"
     propagate_at_launch = true
   }
 }

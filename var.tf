@@ -45,10 +45,10 @@ variable "db_name" {
   default = "userdata"
 }
 variable "db_instance_class" {
-  default = "t2.micro"
+  default = "db.t3.micro"
 }
 variable "db_username" {
-  default = "dell-user"
+  default = "delluser"
 }
 variable "db_password" {
   default = "Dellhoak@987"

@@ -180,23 +180,11 @@ resource "aws_route_table_association" "private-route-2" {
 }
 
 
-
-
-
-
-
-# Create a load balancer, listener, and target group for application tier
-
-
-
-
-# Create a launch template for presentation tier
+#Create a launch template for presentation tier
 data "template_file" "userdata" {
   template = <<-EOF
               #!/bin/bash
-              sudo yum install nginx -y
-              sudo systemctl enable nginx
-              sudo systemctl start nginx
+              sudo yum update -y && sudo yum upgrade -y
               EOF
 }
 
