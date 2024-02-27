@@ -40,7 +40,8 @@ resource "aws_launch_template" "presentation_tier" {
     }
   }
   
-  user_data = "${base64encode(data.template_file.userdata.rendered)}"
+  user_data = base64encode(file("${path.module}/shell-script/web-server.sh"))
+
   instance_type = var.instance-type
   image_id      = data.aws_ami.amazon_linux_2023.id
   key_name = "terra-keypair"

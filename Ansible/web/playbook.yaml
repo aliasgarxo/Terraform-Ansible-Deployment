@@ -1,0 +1,18 @@
+---
+- name: Install and configure Nginx on Amazon Linux 2
+  hosts: application
+  become: yes
+  tasks:
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: latest
+        update_cache: yes
+    - name: Modify index.html
+      lineinfile:
+        path: /usr/share/nginx/html/index.html
+        line: '<html><body><h1>Hello from Nginx on Amazon Linux 3!</h1></body></html>'
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted

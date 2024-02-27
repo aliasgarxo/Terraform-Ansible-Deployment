@@ -51,10 +51,7 @@ variable "db_username" {
   default = "delluser"
 }
 variable "db_password" {
-  default = "Dellhoak@987"
-}
-variable "security_group_id" {
-  default = "[aws_security_group.arch-sg.id]"
+  default = "Dellhoak-987"
 }
 # variable "subnet_ids" {
 #   type = list(string)

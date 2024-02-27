@@ -179,6 +179,48 @@ resource "aws_route_table_association" "private-route-2" {
   route_table_id = aws_route_table.private_route-2.id
 }
 
+resource "aws_network_acl" "allow_all_nacl" {
+  vpc_id = aws_vpc.arch-vpc.id  # Replace 'your_vpc' with the actual name of your VPC resource
+
+  ingress {
+    rule_no    = 100
+    protocol   = "-1"  # "-1" means all protocols
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0  
+  }
+
+  egress {
+    rule_no    = 100
+    protocol   = "-1"
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags = {
+    Name = "my-permissive-nacl" # Descriptive name
+  }
+}
+resource "aws_network_acl_association" "allow_sub1" {
+   network_acl_id = aws_network_acl.allow_all_nacl.id
+   subnet_id      = aws_subnet.arch-pri-sub-1.id  # Replace with your subnet ID
+}
+resource "aws_network_acl_association" "allow_sub2" {
+   network_acl_id = aws_network_acl.allow_all_nacl.id
+   subnet_id      = aws_subnet.arch-pri-sub-2.id  # Replace with your subnet ID
+}
+resource "aws_network_acl_association" "allow_sub3" {
+   network_acl_id = aws_network_acl.allow_all_nacl.id
+   subnet_id      = aws_subnet.arch-pub-sub-1.id  # Replace with your subnet ID
+}
+resource "aws_network_acl_association" "allow_sub4" {
+   network_acl_id = aws_network_acl.allow_all_nacl.id
+   subnet_id      = aws_subnet.arch-pub-sub-2.id  # Replace with your subnet ID
+}
+
 
 #Create a launch template for presentation tier
 data "template_file" "userdata" {

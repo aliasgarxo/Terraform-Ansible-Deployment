@@ -1,0 +1,68 @@
+---
+- name: Java application
+  hosts: application
+  become: true
+  tasks:
+    - name: Install Java 17
+      yum:
+        name: java-17-amazon-corretto
+        state: latest  
+    - name: Download application JAR from GitHub
+      get_url:
+        url: https://raw.githubusercontent.com/aliasgarxo/app-java-jar/master/validation-0.0.1-SNAPSHOT.jar
+        dest: /opt/
+    - name: Install pip
+      yum:
+        name: python3-pip
+        state: present
+
+    - name: Install required Python libraries
+      pip:
+        name:
+          - botocore
+          - boto3
+    - name: Start Application
+      shell: |
+        java -Dserver.forward-headers-strategy=native -jar /opt/validation-0.0.1-SNAPSHOT.jar
+
+
+
+
+
+
+---
+- name: Java application
+  hosts: application
+  become: true
+  tasks:
+    - name: Install Java 17
+      yum:
+        name: java-17-amazon-corretto
+        state: latest  
+    - name: Download application JAR from GitHub
+      get_url:
+        url: https://raw.githubusercontent.com/aliasgarxo/app-java-jar/master/validation-0.0.1-SNAPSHOT.jar
+        dest: /opt/
+    - name: Install pip
+      yum:
+        name: python3-pip
+        state: present
+
+    - name: Install required Python libraries
+      pip:
+        name:
+          - botocore
+          - boto3
+    - name: Get RDS instance facts
+      amazon.aws.rds_instance_info:
+        db_instance_identifier: terraform-20240227063900001700000007
+        region: us-east-2
+        aws_access_key_id: AKIAXIHC6DHFC4AWO6S3
+        aws_secret_access_key: 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
+      register: rds_instance_info
+      retries: 3
+      delay: 5
+    - name: Start Application
+      shell: |
+        java -Dserver.forward-headers-strategy=native -jar /opt/validation-0.0.1-SNAPSHOT.jar \
+          -DRDS_ENDPOINT={{ rds_instance_info.instances[0].endpoint.address }}

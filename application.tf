@@ -2,7 +2,7 @@
 
 resource "aws_lb" "application_tier" {
   name               = "application-tier-lb"
-  internal           = true
+  internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.arch-sg.id]
   subnets            = [aws_subnet.arch-pub-sub-1.id, aws_subnet.arch-pub-sub-2.id]
@@ -13,14 +13,14 @@ resource "aws_lb" "application_tier" {
 
 resource "aws_lb_target_group" "application_tier" {
   name     = "application-tier-lb-tg"
-  port     = "80"
+  port     = "8080"
   protocol = "HTTP"
   vpc_id   = aws_vpc.arch-vpc.id
 }
 
 resource "aws_lb_listener" "application_tier" {
   load_balancer_arn = aws_lb.application_tier.arn
-  port              = "80"
+  port              = "8080"
   protocol          = "HTTP"
 
   default_action {
@@ -95,8 +95,9 @@ resource "aws_instance" "jump-ec2" {
   associate_public_ip_address = true
   security_groups = [aws_security_group.arch-sg.id]
   instance_type = var.instance-type
+  iam_instance_profile = aws_iam_instance_profile.ansible.name
   user_data = file("${path.module}/shell-script/bastion.sh")
-  depends_on = [ local_file.private_key_pem ]
+  depends_on = [ local_file.private_key_pem , aws_iam_role.ansible_role, aws_autoscaling_group.application_tier, aws_autoscaling_group.presentation_tier]
 
   provisioner "file" {
     source      = "terra-keypair.pem" 
@@ -108,10 +109,33 @@ resource "aws_instance" "jump-ec2" {
       host        = self.public_ip 
     }
   }
+  provisioner "file" {
+    source      = "${path.module}/shell-script/get-hosts.sh"
+    destination = "/home/ec2-user/get-hosts.sh"
+    connection {
+      type        = "ssh"
+      user        = "ec2-user" 
+      private_key = tls_private_key.pri-terra-key.private_key_pem 
+      host        = self.public_ip 
+    }
+  }
+  provisioner "file" {
+    source      = "${path.module}/shell-script/get-hosts-web.sh"
+    destination = "/home/ec2-user/get-hosts-web.sh"
+    connection {
+      type        = "ssh"
+      user        = "ec2-user" 
+      private_key = tls_private_key.pri-terra-key.private_key_pem 
+      host        = self.public_ip 
+    }
+  }
   provisioner "remote-exec" {
     inline = [
       "mv /tmp/ssh-key-2024-02-19.key /home/ec2-user/terra-keypair.pem",
-      "chmod 400 /home/ec2-user/terra-keypair.pem" 
+      "chmod 400 /home/ec2-user/terra-keypair.pem",
+      "chmod +x /home/ec2-user/get-hosts.sh",
+      "chmod +x /home/ec2-user/get-hosts-web.sh",
+      "echo 'Provisioner script completed' > /home/ec2-user/provisioner_done.txt"
     ]
     connection {
       type        = "ssh"
