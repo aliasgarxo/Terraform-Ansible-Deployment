@@ -57,8 +57,6 @@
       amazon.aws.rds_instance_info:
         db_instance_identifier: terraform-20240227063900001700000007
         region: us-east-2
-        aws_access_key_id: AKIAXIHC6DHFC4AWO6S3
-        aws_secret_access_key: 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
       register: rds_instance_info
       retries: 3
       delay: 5
