@@ -1,1 +1,2 @@
-![3](https://github.com/aliasgarxo/3-tier-app-deploy/assets/134081765/5ae146e5-9df5-42fa-b385-c5e43fa403f5)
+
+![terra-ansi](https://github.com/aliasgarxo/Terraform-Ansible-Deployment/assets/134081765/3a08861c-807c-4da8-8f2b-c68c98af6c50)
