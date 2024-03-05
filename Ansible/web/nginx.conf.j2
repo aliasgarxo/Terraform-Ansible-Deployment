@@ -1,0 +1,26 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+  worker_connections 768;
+}
+
+http {
+  upstream app_servers { 
+    server {{ lb_dns_names[0] }}:8080;  # Internal ALB DNS name
+  }
+
+  server {
+    listen 80;
+    server_name  {{ lb_dns_names[1] }};  # Web server LB DNS name
+
+    location / {
+      proxy_pass http://app_servers;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+  }
+}

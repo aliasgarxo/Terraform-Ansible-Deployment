@@ -1,18 +1,34 @@
 ---
-- name: Install and configure Nginx on Amazon Linux 2
-  hosts: application
-  become: yes
+- name: Configure Nginx Reverse Proxy
+  hosts: web_server  
+  become: true  
+
   tasks:
     - name: Install Nginx
       yum:
         name: nginx
         state: latest
-        update_cache: yes
-    - name: Modify index.html
-      lineinfile:
-        path: /usr/share/nginx/html/index.html
-        line: '<html><body><h1>Hello from Nginx on Amazon Linux 3!</h1></body></html>'
+    - name: Install pip
+      yum:
+        name: python3-pip
+        state: present
+    - name: Install Boto3
+      pip:
+        name: boto3
+        state: present
+
+    - name: Fetch load balancer DNS names
+      register: lb_info  # Stores the result
+      shell: |
+        aws elbv2 describe-load-balancers --names application-tier-lb front-end-lb --output json | jq -r '.LoadBalancers[].DNSName' > lb_dns_names.txt 
+
+    - name: Configure Nginx reverse proxy (with dynamic values)
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: restart nginx  
+
     - name: Restart Nginx
-      systemd:
+      service:
         name: nginx
-        state: restarted
+        state: restarted 

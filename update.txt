@@ -1,0 +1,5 @@
+these are the following thisngs to add in this project
+edit the web server configuration to connect to application server reverse proxy
+currently the app load balanccer is internet facing make it internal by reverse traffic to nginx web server load balancer.
+make the deployment process working through CI/CD pipeline.
+try to make this more dynamic
