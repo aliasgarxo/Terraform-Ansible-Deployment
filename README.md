@@ -1,8 +1,10 @@
+<img src="https://github.com/aliasgarxo/Terraform-Ansible-Deployment/assets/134081765/3a08861c-807c-4da8-8f2b-c68c98af6c50" width="500">
 
-![terra-ansi](https://github.com/aliasgarxo/Terraform-Ansible-Deployment/assets/134081765/3a08861c-807c-4da8-8f2b-c68c98af6c50)
 # Scalable 3-Tier Web Application with Terraform and Ansible
 
 This project uses Terraform and Ansible to provision and deploy a scalable 3-tier web application on AWS. It automates the creation of a robust infrastructure and deploys a Java application onto application servers.
+The infrastructure consists of 3 layers - Web layer, Application layer, and Database layer. Application and web servers are attached to Load Balancers and Auto Scaling for High availability and Scalability.
+
 
 ## Key Features
 
@@ -29,7 +31,6 @@ This project uses Terraform and Ansible to provision and deploy a scalable 3-tie
 
 - AWS account with privileges to create VPCs, EC2 instances, RDS, etc.
 - Terraform installed locally.
-- Ansible installed locally.
 - Your Java application code ready for deployment.
 
 ## Getting Started
@@ -57,10 +58,10 @@ This project uses Terraform and Ansible to provision and deploy a scalable 3-tie
     terraform apply
     ```
 
-5. **Run Ansible Playbook**:
-
+5. **Run Ansible Playbook On Bastion Server**:
+    This playbook will run on servers which are in Application tier Auto scaling group. For Web servers you can change the host file local to `/opt/web-server/hosts.ini`
     ```bash
-    ansible-playbook deploy_app.yml
+    ansible-playbook playbook.yaml -i /opt/application/hosts.ini
     ```
 
 ## Next Steps
