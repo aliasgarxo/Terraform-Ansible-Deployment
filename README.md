@@ -1,10 +1,11 @@
-<img src="https://github.com/aliasgarxo/Terraform-Ansible-Deployment/assets/134081765/3a08861c-807c-4da8-8f2b-c68c98af6c50" width="500">
+
 
 # Scalable 3-Tier Web Application with Terraform and Ansible
 
 This project uses Terraform and Ansible to provision and deploy a scalable 3-tier web application on AWS. It automates the creation of a robust infrastructure and deploys a Java application onto application servers.
 The infrastructure consists of 3 layers - Web layer, Application layer, and Database layer. Application and web servers are attached to Load Balancers and Auto Scaling for High availability and Scalability.
 
+<img src="https://github.com/aliasgarxo/Terraform-Ansible-Deployment/assets/134081765/3a08861c-807c-4da8-8f2b-c68c98af6c50" width="500">
 
 ## Key Features
 
