@@ -44,7 +44,7 @@ The infrastructure consists of 3 layers - Web layer, Application layer, and Data
 
 2. **Configure Settings**:
 
-    Modify `variables.tf` with your AWS region, instance types, VPC settings, etc. Update Ansible playbooks (e.g., `deploy_app.yml`) with your Java application details and configuration.
+    Modify `variables.tf` with your AWS region, instance types, VPC settings, etc. Update Ansible playbooks (e.g., `app.yml`) with your Java application details and configuration.
 
 3. **Initialize Terraform**:
 
@@ -62,7 +62,7 @@ The infrastructure consists of 3 layers - Web layer, Application layer, and Data
 5. **Run Ansible Playbook On Bastion Server**:
     This playbook will run on servers which are in Application tier Auto scaling group. For Web servers you can change the host file local to `/opt/web-server/hosts.ini`
     ```bash
-    ansible-playbook playbook.yaml -i /opt/application/hosts.ini
+    ansible-playbook app.yaml -i /opt/application/hosts.ini
     ```
 
 ## Next Steps
